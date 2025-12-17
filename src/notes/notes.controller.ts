@@ -4,10 +4,13 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { EditNoteDto } from './dto/edit-note.dto';
 
 @Controller('notes')
 export class NotesController {
@@ -19,23 +22,17 @@ export class NotesController {
   }
 
   @Post()
-  createNote(@Body() body: { title: string; content: string }) {
+  createNote(@Body() body: CreateNoteDto) {
     return this.noteService.createNote(body.title, body.content);
   }
 
   @Put(':id')
-  editNote(
-    @Param('id') id: string,
-    @Body() body: { title: string; content: string },
-  ) {
-    let numberId = Number(id.slice(1, id.length));
-    return this.noteService.editNote(numberId, body.title, body.content);
+  editNote(@Param('id', ParseIntPipe) id: number, @Body() body: EditNoteDto) {
+    return this.noteService.editNote(id, body.title, body.content);
   }
 
   @Delete(':id')
-  deleteNote(@Param('id') id: string) {
-    let numberId = Number(id.slice(1, id.length));
-
-    return this.noteService.deleteNote(numberId);
+  deleteNote(@Param('id', ParseIntPipe) id: number) {
+    return this.noteService.deleteNote(id);
   }
 }
