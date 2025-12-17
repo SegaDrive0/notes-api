@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { EditNoteDto } from './dto/edit-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 @Controller('notes')
 export class NotesController {
@@ -23,12 +23,15 @@ export class NotesController {
 
   @Post()
   createNote(@Body() body: CreateNoteDto) {
-    return this.noteService.createNote(body.title, body.content);
+    return this.noteService.createNote(body);
   }
 
   @Put(':id')
-  editNote(@Param('id', ParseIntPipe) id: number, @Body() body: EditNoteDto) {
-    return this.noteService.editNote(id, body.title, body.content);
+  updateNote(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateNoteDto,
+  ) {
+    return this.noteService.updateNote(id, body);
   }
 
   @Delete(':id')

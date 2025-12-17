@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-
-export interface Note {
-  id: number;
-  title: string;
-  content: string;
-}
+import { Note } from './notes.types';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 export type ServiceResult<T> =
   | { success: true; data: T }
@@ -20,7 +17,8 @@ export class NotesService {
     return this.notes;
   }
 
-  createNote(title: string, content: string): Note {
+  createNote(body: CreateNoteDto): Note {
+    const { title, content } = body;
     const newNote = {
       id: Date.now(),
       title,
@@ -32,7 +30,8 @@ export class NotesService {
     return newNote;
   }
 
-  editNote(id: number, title: string, content: string): ServiceResult<Note> {
+  updateNote(id: number, body: UpdateNoteDto): ServiceResult<Note> {
+    const { title, content } = body;
     let note = this.notes.find((note) => note.id === id);
 
     if (!note) {
