@@ -8,9 +8,9 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { NotesService } from './notes.service';
 
 @Controller('notes')
 export class NotesController {
@@ -22,16 +22,16 @@ export class NotesController {
   }
 
   @Post()
-  createNote(@Body() body: CreateNoteDto) {
-    return this.noteService.createNote(body);
+  createNote(@Body() body: { title: string; content: string }) {
+    return this.noteService.createNote(body.title, body.content);
   }
 
   @Put(':id')
   updateNote(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateNoteDto,
+    @Body() body: { title: string; content: string },
   ) {
-    return this.noteService.updateNote(id, body);
+    return this.noteService.updateNote(id, body.title, body.content);
   }
 
   @Delete(':id')

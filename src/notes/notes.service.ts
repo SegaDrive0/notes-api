@@ -1,64 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Note } from './notes.types';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
-
-export type ServiceResult<T> =
-  | { success: true; data: T }
-  | { success: false; reason: 'NOT_FOUND' };
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class NotesService {
-  private notes: Note[] = [
-    { id: 1, title: 'First title', content: 'My first content' },
-  ];
+  constructor(private readonly prisma: PrismaService) {}
 
-  getNotes(): Note[] {
-    return this.notes;
+  async getNotes(): Promise<Note[]> {
+    return this.prisma.note.findMany();
   }
 
-  createNote(body: CreateNoteDto): Note {
-    const { title, content } = body;
-    const newNote = {
-      id: Date.now(),
-      title,
-      content,
-    };
-
-    this.notes.push(newNote);
-
-    return newNote;
+  async getNoteById(id: number): Promise<Note | null> {
+    return this.prisma.note.findUnique({
+      where: { id },
+    });
   }
 
-  updateNote(id: number, body: UpdateNoteDto): ServiceResult<Note> {
-    const { title, content } = body;
-    let note = this.notes.find((note) => note.id === id);
-
-    if (!note) {
-      return { success: false, reason: 'NOT_FOUND' };
-    }
-
-    note.title = title;
-    note.content = content;
-
-    return { success: true, data: note };
+  async createNote(title: string, content: string): Promise<Note> {
+    return this.prisma.note.create({
+      data: { title, content },
+    });
   }
 
-  deleteNote(id: number): ServiceResult<Note> {
-    let index = this.notes.findIndex((note) => note.id === id);
+  async updateNote(
+    id: number,
+    title: string,
+    content: string,
+  ): Promise<Note | null> {
+    return this.prisma.note.update({
+      where: { id },
+      data: { title, content },
+    });
+  }
 
-    if (index === -1) {
-      return { success: false, reason: 'NOT_FOUND' };
-    }
-
-    let deletedNote = this.notes[index];
-
-    if (!deletedNote) {
-      return { success: false, reason: 'NOT_FOUND' };
-    }
-
-    this.notes.splice(index, 1);
-
-    return { success: true, data: deletedNote };
+  async deleteNote(id: number): Promise<Note> {
+    return this.prisma.note.delete({
+      where: { id },
+    });
   }
 }
