@@ -21,6 +21,11 @@ export class NotesController {
     return this.noteService.getNotes();
   }
 
+  @Get(':id')
+  getNoteById(@Param('id', ParseIntPipe) id: number) {
+    return this.noteService.getNoteById(id);
+  }
+
   @Post()
   createNote(@Body() body: { title: string; content: string }) {
     return this.noteService.createNote(body.title, body.content);
