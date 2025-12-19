@@ -2,13 +2,32 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Note } from './notes.types';
 import { PrismaService } from 'prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { GetNotesDto } from './dto/get-note.dto';
 
 @Injectable()
 export class NotesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getNotes(): Promise<Note[]> {
-    return await this.prisma.note.findMany();
+  async getNotes(query: GetNotesDto): Promise<Note[]> {
+    const { page = 1, limit = 10, search } = query;
+
+    const skip = (page - 1) * limit;
+
+    return await this.prisma.note.findMany({
+      where: search
+        ? {
+            OR: [
+              { title: { contains: search, mode: 'insensitive' } },
+              { content: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : undefined,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   async getNoteById(id: number) {

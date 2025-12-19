@@ -7,18 +7,20 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { NotesService } from './notes.service';
+import { GetNotesDto } from './dto/get-note.dto';
 
 @Controller('notes')
 export class NotesController {
   constructor(private readonly noteService: NotesService) {}
 
   @Get()
-  getNotes() {
-    return this.noteService.getNotes();
+  getNotes(@Query() query: GetNotesDto) {
+    return this.noteService.getNotes(query);
   }
 
   @Get(':id')
