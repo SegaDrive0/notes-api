@@ -27,14 +27,14 @@ export class NotesController {
   }
 
   @Post()
-  createNote(@Body() body: { title: string; content: string }) {
+  createNote(@Body() body: CreateNoteDto) {
     return this.noteService.createNote(body.title, body.content);
   }
 
   @Put(':id')
   updateNote(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: { title: string; content: string },
+    @Body() body: UpdateNoteDto,
   ) {
     return this.noteService.updateNote(id, body.title, body.content);
   }
