@@ -18,4 +18,15 @@ model Note {
   title   String
   content String
   createdAt DateTime @default(now())
+
+  logs NoteLog[]
+}
+
+model NoteLog {
+  id       Int @id @default(autoincrement()) 
+  noteId   Int
+  action   String
+  createdAt DateTime @default(now())
+
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
 }

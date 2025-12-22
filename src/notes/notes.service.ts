@@ -65,6 +65,32 @@ export class NotesService {
     }
   }
 
+  async updateNoteWithLog(id: number, title: string, content: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const note = await tx.note.findUnique({
+        where: { id },
+      });
+
+      if (!note) {
+        throw new NotFoundException(`Note with id: ${id} not found`);
+      }
+
+      const updateNote = await tx.note.update({
+        where: { id },
+        data: { title, content },
+      });
+
+      await tx.noteLog.create({
+        data: {
+          noteId: id,
+          action: 'UPDATE',
+        },
+      });
+
+      return updateNote;
+    });
+  }
+
   async deleteNote(id: number) {
     try {
       return await this.prisma.note.delete({
