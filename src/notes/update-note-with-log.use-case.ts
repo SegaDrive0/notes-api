@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { NoteRepository } from './notes.repository';
+import { NoteNotFoundError } from './errors/note-not-found.error';
 
 @Injectable()
 export class UpdateNoteWithLogUseCase {
@@ -14,7 +15,7 @@ export class UpdateNoteWithLogUseCase {
       const note = await this.repo.findById(tx, id);
 
       if (!note) {
-        throw new NotFoundException(`Note with id: ${id} not found`);
+        throw new NoteNotFoundError(id);
       }
 
       const updateNote = await this.repo.update(tx, id, title, content);
