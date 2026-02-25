@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Note } from './notes.types';
 import { PrismaService } from 'prisma/prisma.service';
 import { Prisma } from '@prisma/client';
@@ -43,9 +47,13 @@ export class NotesService {
   }
 
   async createNote(title: string, content: string) {
-    return await this.prisma.note.create({
-      data: { title, content },
-    });
+    try {
+      return await this.prisma.note.create({
+        data: { title, content },
+      });
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async updateNote(id: number, title: string, content: string) {
